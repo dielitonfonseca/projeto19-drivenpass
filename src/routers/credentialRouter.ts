@@ -1,18 +1,32 @@
 import { Router } from "express";
-import userController from "../controllers/userController.js";
+import credentialController from "../controllers/credentialController.js";
 import { validateSchemaMiddleware } from "../middlewares/validateSchemaMiddleware.js";
-import userSchema from "../schemas/userSchema.js";
+import { tokenvalidateMiddleware } from "../middlewares/tokenValidateMiddleware.js";
+import credentialSchema from "../schemas/credentialSchema.js";
 const credentialRouter = Router();
 
 credentialRouter.post(
-  "/users/signin",
-  validateSchemaMiddleware(userSchema.UserSigninSchema),
-  userController.Signin
-);
-credentialRouter.post(
-  "/users/signup",
-  validateSchemaMiddleware(userSchema.UserSignupSchema),
-  userController.Signup
+  "/credentials",
+  validateSchemaMiddleware(credentialSchema.CredentialSchema),
+  tokenvalidateMiddleware,
+  credentialController.CreateCredential
 );
 
+credentialRouter.get(
+  "/credentials",
+  tokenvalidateMiddleware,
+  credentialController.SearchAllByUser
+);
+
+credentialRouter.get(
+  "/credentials/:id",
+  tokenvalidateMiddleware,
+  credentialController.SearchById
+);
+
+credentialRouter.delete(
+  "/credentials/:id",
+  tokenvalidateMiddleware,
+  credentialController.DeleteById
+);
 export default credentialRouter;
